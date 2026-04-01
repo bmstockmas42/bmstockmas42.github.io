@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Weather App</title>
+    
+    <link rel="icon" type="image/png" href="images/weather-icon.png">
+    <link rel="apple-touch-icon" href="images/weather-icon.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="images/weather-icon.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="images/weather-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="images/weather-icon.png">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cerulean/bootstrap.min.css" integrity="sha384-3fdgwJw17Bi87e1QQ4fsLn4rUFqWw//KU0g8TvV6quvahISRewev6/EocKNuJmEw" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="bg-dark">
+    <div class="d-flex justify-content-center align-items-center min-vh-100 py-4">
+        <div class="card col-11 col-md-6 col-lg-4 shadow-lg"> <div class="card-body">
+                
+                <div class="d-flex flex-column align-items-center text-center mt-2">
+                    
+                    <i class="bi bi-geo-alt text-success" style="font-size: 3rem; line-height: 1"></i>
+                    <h3 class="text-success mt-1 mb-3">Cookeville</h3>
+
+                    <h6 class="text-black mb-0">Current Conditions</h6>
+                    <i id="iconCondition" class="bi bi-cloud text-secondary" style="font-size: 6rem; line-height: 2"></i>
+                    <p id="txtConditionDesc" class="font-weight-bold mb-2">Loading...</p>
+                    
+                    <hr class="w-100 my-2">
+
+                    <div class="d-flex justify-content-around w-100 mt-2">
+                        
+                        <div class="d-flex flex-column align-items-center">
+                            <span class="text-muted text-uppercase fw-bold mb-0" style="font-size: 0.75rem">Temperature</span>
+                            <h4 class="mb-0 text-black mt-1">
+                                <i class="bi bi-thermometer-half text-warning"></i> 
+                                <span id="txtTemp">--</span>&deg;
+                            </h4>
+                        </div>
+                        
+                        <div class="d-flex flex-column align-items-center">
+                            <span class="text-muted text-uppercase fw-bold mb-0" style="font-size: 0.75rem;">Humidity</span>
+                            <h4 class="mb-0 text-black mt-1">
+                                <i class="bi bi-droplet-fill text-primary"></i> 
+                                <span id="txtHumidity">--</span>%
+                            </h4>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="card-footer text-center text-muted p-2"> <small>Weather data is provided by <a href="https://open-meteo.com/" target="_blank">Open-Meteo.com</a></small>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <script>
+        const strURL = `https://api.open-meteo.com/v1/forecast?latitude=36.1682&longitude=-85.5016&current=temperature_2m,relative_humidity_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FChicago`
+
+        fetch(`${strURL}`)
+        .then(response => response.json())
+        .then(data => {
+            
+            let objCurrent = data.current
+
+            let decTemp = objCurrent.temperature_2m
+            let intHumidity = objCurrent.relative_humidity_2m
+            let intWeatherCode = objCurrent.weather_code
+
+            document.querySelector('#txtTemp').innerHTML = Math.round(decTemp)
+            document.querySelector('#txtHumidity').innerHTML = intHumidity
+
+            let strIconClass = 'bi-cloud'
+            let strCondition = 'Unknown'
+
+            if(intWeatherCode === 0){
+                strIconClass = 'bi-sun'
+                strCondition = 'Clear Sky'
+            } else if (intWeatherCode >= 1 && intWeatherCode <= 3){
+                strIconClass = 'bi-clouds'
+                strCondition = 'Overcast Clouds'
+            } else if (intWeatherCode >= 45 && intWeatherCode <= 48){
+                strIconClass = 'bi-cloud-haze'
+                strCondition = 'Foggy'
+            } else if (intWeatherCode >= 51 && intWeatherCode <= 67){
+                strIconClass = 'bi-cloud-rain'
+                strCondition = 'Rainy'
+            } else if (intWeatherCode >= 71 && intWeatherCode <= 77){
+                strIconClass = 'bi-cloud-snow'
+                strCondition = 'Snowy'
+            } else if (intWeatherCode >= 95){
+                strIconClass = 'bi-cloud-lightning-rain'
+                strCondition = 'Thunderstorms'
+            }
+
+            document.querySelector('#iconCondition').className = `bi ${strIconClass} text-secondary`
+            document.querySelector('#txtConditionDesc').innerHTML = strCondition
+
+        })
+        .catch(error => console.error(error))
+
+        // Used Gemini to help with images, icons, spacing, and looks of the page in html
+        // Used it to also fix up the application make sure it had everything and ran right
+    </script>
+</body>
+</html>
